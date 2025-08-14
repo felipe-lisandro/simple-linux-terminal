@@ -32,7 +32,7 @@ int main(void){
         if(nCom > 1 && !strcmp(arrayCom[nCom - 1], "&")){
             background = 1;
             free(arrayCom[nCom - 1]);
-            arrayCom[nCom] = NULL;
+            arrayCom[nCom - 1] = NULL;
         }
         // finally, executes the command
         int executed = 0;
@@ -48,6 +48,9 @@ int main(void){
                 }
                 else if(!background){
                     waitpid(pid, NULL, 0);
+                }
+                else if(background){
+                    
                 }
                 executed = 1;
                 break;

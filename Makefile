@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -Iinclude
-SRC = src/main.c src/input.c
+SRC = src/main.c src/input.c src/handler.c
 OBJ = $(SRC:.c=.o)
 TARGET = simpleshell
 
