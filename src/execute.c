@@ -36,6 +36,11 @@ void receiveCommand(char **arrayDir, char **arrayCom){
     char **actualCommand = malloc(sizeof(char *) * 64);
     int background = 0, executed, index = 0;
     for(int i = 0; arrayCom[i]; i++){
+        if(arrayCom[0] && strcmp(arrayCom[0], "cd") == 0){
+            char *target = arrayCom[1] ? arrayCom[1] : getenv("HOME");
+            if(chdir(target) != 0) perror("cd failed");
+            return; // skip receiveCommand logic entirely
+        }
         if(!strcmp(arrayCom[i], "&")){
             background = 1;
             continue;
