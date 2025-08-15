@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include "input.h"
+#include "execute.h"
 #include <string.h>
 
 int main(void){
@@ -25,42 +26,8 @@ int main(void){
             free(arrayCom);
             break;
         }
-        // check to see if the command should be run on background
-        int background = 0;
-        int nCom = 0;
-        while(arrayCom[nCom]) nCom++;
-        if(nCom > 1 && !strcmp(arrayCom[nCom - 1], "&")){
-            background = 1;
-            free(arrayCom[nCom - 1]);
-            arrayCom[nCom - 1] = NULL;
-        }
         // finally, executes the command
-        int executed = 0;
-        for(int i = 0; arrayDir[i]; i++){
-            char fullpath[1024];
-            snprintf(fullpath, sizeof(fullpath), "%s/%s", arrayDir[i], arrayCom[0]);
-            if(access(fullpath, X_OK) == 0){
-                pid_t pid = fork();
-                if(pid == 0){ // child
-                    execvp(fullpath, arrayCom);
-                    perror("execv failed");
-                    exit(EXIT_FAILURE);
-                }
-                else if(!background){
-                    waitpid(pid, NULL, 0);
-                }
-                else if(background){
-                    
-                }
-                executed = 1;
-                break;
-            }
-        }
-        if(!executed){
-            printf("Command not found: %s\n", arrayCom[0]);
-        }
-        for(int i = 0; arrayCom[i] != NULL; i++) free(arrayCom[i]);
-        free(arrayCom);
+        receiveCommand(arrayDir, arrayCom);
     }
     // as the program exits, the arrayDir should be fred
     for(int i = 0; arrayDir[i]; i++) free(arrayDir[i]);
