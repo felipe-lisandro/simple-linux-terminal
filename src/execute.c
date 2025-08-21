@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include "execute.h"
 #include "handler.h"
+#include "parsing.h"
 
 int execute(char **arrayDir, char **arrayCom, int background){
     int executed = 0;
@@ -33,42 +34,17 @@ int execute(char **arrayDir, char **arrayCom, int background){
 
 // will try to implment the chain command options (&& || ;)
 void receiveCommand(char **arrayDir, char **arrayCom){
-    char **actualCommand = malloc(sizeof(char *) * 64);
-    int background = 0, executed, index = 0;
-    for(int i = 0; arrayCom[i]; i++){
-        if(arrayCom[0] && strcmp(arrayCom[0], "cd") == 0){
-            char *target = arrayCom[1] ? arrayCom[1] : getenv("HOME");
-            if(chdir(target) != 0) perror("cd failed");
-            return; // skip receiveCommand logic entirely
-        }
-        if(!strcmp(arrayCom[i], "&")){
-            background = 1;
-            continue;
-        }
-        if(!strcmp(arrayCom[i], "&&") || !strcmp(arrayCom[i], "||") || !strcmp(arrayCom[i], ";")){
-            actualCommand[index] = NULL;
-            executed = execute(arrayDir, actualCommand, background);
-            background = 0;
-            // checks for the chain operators behavior now
-            // "&&" case runs if the previous worked
-            if(!strcmp(arrayCom[i], "&&")){
-                if(!executed) break;
+    commNode* commParsed = parsing(arrayCom);
+    int lastExecution;
+    for(int i = 0; i < 16; i++){
+        if(i == 0) lastExecution = execute(arrayDir, commParsed[i].comm, commParsed[i].background);
+        else{
+            if(commParsed[i].conditional == 1){
+                if(lastExecution) execute(arrayDir, commParsed[i].comm, commParsed[i].background);
             }
-            // "||" case runs if the previous failed
-            if(!strcmp(arrayCom[i], "||")){
-                if(executed) break;
+            else if(commParsed[i].conditional == -1){
+                if(!lastExecution) execute(arrayDir, commParsed[i].comm, commParsed[i].background);
             }
-            // ";" case just runs the next command
-            free(actualCommand);
-            index = 0;
-            continue;
         }
-        actualCommand[index] = arrayCom[i];
-        index++;
     }
-    actualCommand[index] = NULL;
-    execute(arrayDir, actualCommand, background);
-    background = 0;
-    index = 0;
-    free(actualCommand);
 }
