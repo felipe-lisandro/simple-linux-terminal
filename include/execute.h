@@ -1,6 +1,8 @@
 #ifndef EXECUTE_H
 #define EXECUTE_H
 
-void receiveCommand(char **arrayDir, char **arrayCom);
+#include "comm_treatment.h"
+
+void execute_all(CommandStruct *cmds);
 
 #endif
