@@ -1,14 +1,8 @@
 #ifndef INPUT_H
 #define INPUT_H
 
-/**
- * Gets the system paths to execute commands 
- */
-char **getSysPaths(void);
+char **get_sys_paths(void);
 
-/**
- * Gets the input commands from the user
- */
-char **inputCom(void);
+char **input_com(void);
 
 #endif

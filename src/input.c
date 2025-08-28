@@ -3,9 +3,10 @@
 #include <string.h>
 #include "input.h"
 
-#define SIZE_INPUT 1024 
+#define INPUT_SIZE 1024
 
-char **getArrayTokenized(char* source, char strSeparation){
+// returns a null-termined array of strings 
+char **get_array_tokenized(char* source, char strSeparation){
     char strDelim[2] = {strSeparation, '\0'};
     int idealSize = 16;
     char **tokenizedArray = malloc(sizeof(char*) * idealSize);
@@ -25,21 +26,21 @@ char **getArrayTokenized(char* source, char strSeparation){
     return tokenizedArray;
 }
 
-char **getSysPaths(void){
+char **get_sys_paths(void){
     char *sysPath = getenv("PATH");
     if(!sysPath) return NULL;
     char *sysPathCopy = strdup(sysPath);
     if(!sysPathCopy) return NULL;
-    char **arrayDir = getArrayTokenized(sysPathCopy, ':');
+    char **arrayDir = get_array_tokenized(sysPathCopy, ':');
     free(sysPathCopy);
     return arrayDir;
 }
 
-char **inputCom(void){
-    char input[SIZE_INPUT];
+char **input_com(void){
+    char input[INPUT_SIZE];
     if (!fgets(input, sizeof(input), stdin)) return NULL;
     int inputSize = strlen(input);
     if(inputSize > 0 && input[inputSize - 1] == '\n') input[inputSize - 1] = '\0';
-    char **arrayCom = getArrayTokenized(input, ' ');
+    char **arrayCom = get_array_tokenized(input, ' ');
     return arrayCom;
 }
